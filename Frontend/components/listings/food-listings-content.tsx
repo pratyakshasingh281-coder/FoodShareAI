@@ -103,7 +103,26 @@ function CountdownTimer({ expiryTime }: { expiryTime: string }) {
   )
 }
 export function FoodListingsContent() {
-  const [foods, setFoods] = useState<Food[]>([])
+  const [foods, setFoods] = useState<Food[]>([
+  {
+    _id: "1",
+    title: "Fresh Vegetables",
+    category: "raw",
+    quantity: { value: 5, unit: "kg" },
+    expiryTime: new Date(Date.now() + 1 * 60 * 60 * 1000).toISOString(),
+    status: "available",
+    images: [],
+  },
+  {
+    _id: "2",
+    title: "Cooked Rice",
+    category: "cooked",
+    quantity: { value: 10, unit: "kg" },
+    expiryTime: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
+    status: "available",
+    images: [],
+  },
+])
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   

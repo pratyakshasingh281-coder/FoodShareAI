@@ -113,7 +113,7 @@ export function DashboardContent() {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-       await new Promise(resolve => setTimeout(resolve, 3000))
+      
       try {
         // 1. Fetch Food
         const foodRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/food`)
