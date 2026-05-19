@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -112,6 +113,7 @@ export function DashboardContent() {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+       await new Promise(resolve => setTimeout(resolve, 3000))
       try {
         // 1. Fetch Food
         const foodRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/food`)
@@ -239,21 +241,38 @@ export function DashboardContent() {
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {dynamicStats.map((stat) => (
-          <Card key={stat.title} className="bg-card border-border">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                  <p className="text-2xl font-bold text-card-foreground">{stat.value}</p>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1"><TrendingUp className="h-3 w-3" />{stat.change}</p>
-                </div>
-                <div className={`rounded-lg p-3 ${stat.bgColor}`}><stat.icon className={`h-6 w-6 ${stat.color}`} /></div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+        {loading ? (
+  Array.from({ length: 4 }).map((_, i) => (
+    <Card key={i} className="bg-card border-border">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-8 w-16" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+          <Skeleton className="h-12 w-12 rounded-lg" />
+        </div>
+      </CardContent>
+    </Card>
+  ))
+) : (
+  dynamicStats.map((stat) => (
+    <Card key={stat.title} className="bg-card border-border">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+            <p className="text-2xl font-bold text-card-foreground">{stat.value}</p>
+            <p className="text-xs text-muted-foreground flex items-center gap-1"><TrendingUp className="h-3 w-3" />{stat.change}</p>
+          </div>
+          <div className={`rounded-lg p-3 ${stat.bgColor}`}><stat.icon className={`h-6 w-6 ${stat.color}`} /></div>
+        </div>
+      </CardContent>
+    </Card>
+  ))
+)}
+</div>
 
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
@@ -265,8 +284,23 @@ export function DashboardContent() {
           <CardContent>
             <div className="space-y-3">
               {loading ? (
-                <p>Loading...</p>
-              ) : foods.length === 0 ? (
+  Array.from({ length: 3 }).map((_, i) => (
+    <div key={i} className="flex items-center justify-between rounded-lg border border-border p-4">
+      <div className="flex items-center gap-4">
+        <Skeleton className="h-12 w-12 rounded-lg" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-3 w-40" />
+        </div>
+      </div>
+      <div className="flex flex-col items-end gap-2">
+        <Skeleton className="h-5 w-16 rounded-full" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+    </div>
+  ))
+) : foods.length === 0 ? (
                 <p className="text-muted-foreground">No food listings yet 🚀</p>
               ) : (
                 foods.map((listing) => {

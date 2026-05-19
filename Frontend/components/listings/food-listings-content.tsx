@@ -64,7 +64,44 @@ function isUrgent(expiryTime: string) {
   const hoursLeft = (new Date(expiryTime).getTime() - Date.now()) / (1000 * 60 * 60)
   return hoursLeft > 0 && hoursLeft < 6
 }
+function CountdownTimer({ expiryTime }: { expiryTime: string }) {
+  const [timeLeft, setTimeLeft] = useState("")
+  const [urgency, setUrgency] = useState("safe")
 
+  useEffect(() => {
+    const update = () => {
+      const diff = new Date(expiryTime).getTime() - Date.now()
+      if (diff <= 0) {
+        setTimeLeft("Expired")
+        setUrgency("expired")
+        return
+      }
+      const h = Math.floor(diff / (1000 * 60 * 60))
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+      const s = Math.floor((diff % (1000 * 60)) / 1000)
+      setTimeLeft(`${h}h ${m}m ${s}s`)
+      if (diff < 2 * 60 * 60 * 1000) setUrgency("critical")
+      else if (diff < 6 * 60 * 60 * 1000) setUrgency("warning")
+      else setUrgency("safe")
+    }
+    update()
+    const interval = setInterval(update, 1000)
+    return () => clearInterval(interval)
+  }, [expiryTime])
+
+  const colors = {
+    safe: "text-green-500",
+    warning: "text-yellow-500",
+    critical: "text-red-500 animate-pulse",
+    expired: "text-muted-foreground line-through",
+  }
+
+  return (
+    <span className={`font-medium ${colors[urgency as keyof typeof colors]}`}>
+      {timeLeft === "Expired" ? "Expired" : `Expires in: ${timeLeft}`}
+    </span>
+  )
+}
 export function FoodListingsContent() {
   const [foods, setFoods] = useState<Food[]>([])
   const [loading, setLoading] = useState(true)
@@ -248,9 +285,9 @@ export function FoodListingsContent() {
 
                 <div className="space-y-2 pt-3 border-t border-border/50 text-xs text-muted-foreground">
                   <div className="flex items-center gap-2">
-                    <Clock className="h-3.5 w-3.5 text-primary" />
-                    <span>Expires at {new Date(listing.expiryTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                  </div>
+  <Clock className="h-3.5 w-3.5 text-primary" />
+  <CountdownTimer expiryTime={listing.expiryTime} />
+</div>
                   <div className="flex items-center gap-2">
                     <MapPin className="h-3.5 w-3.5 text-primary" />
                     <span className="truncate">{listing.pickupLocation?.address || "Location Details hidden"}</span>
